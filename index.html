@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>Signup Form</title>
+
+</head>
+
+<body>
+    <h1>Signup Form</h1>
+
+    <div class="signup">
+        <form onsubmit="signup(); return false" id="signupForm">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" required>
+            <br>
+            <br>
+
+            <label for="userName">User Name</label>
+            <input type="text" id="userName" required>
+            <br>
+            <br>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" required>
+            <br>
+            <br>
+
+            <label for="email">email</label>
+            <input type="email" id="email" required>
+            <br>
+            <br>
+
+            <input type="submit" value="Signup">
+        </form>
+    </div>
+
+    <p id="message">
+
+    </p>
+
+    <br>
+    <br>
+    <br>
+
+    <button onclick="getAllUsers()">Get All Users</button>
+
+
+    <table>
+
+    </table>
+    <div id="getAlluser"> </div>
+
+
+    <script>
+        function resetForm() {
+            const form = document.getElementById('my_form');
+
+            form.addEventListener('submit', function handleSubmit(event) {
+                event.preventDefault();
+
+                form.reset();
+            });
+        }
+
+        function signup() {
+            let fullName = document.getElementById('fullName').value;
+            let userName = document.getElementById('userName').value;
+            let password = document.getElementById('password').value;
+            let email = document.getElementById('email').value;
+
+            axios.post('https://socialmediafht.herokuapp.com/user', {
+
+                fullName: fullName,
+                userName: userName,
+                password: password,
+                email: email
+            })
+                .then(function (response) {
+                    document.querySelector("#message").innerHTML = response.data
+                    getAllUsers()
+                    resetForm()
+                })
+                .catch(function (error) {
+                    console.log(error.message);
+                });
+        }
+
+
+        function getAllUsers() {
+            var table = '<table id="mtable">';
+
+            table += '<tr>'
+            table += '<th scope="col">Full Name</th>'
+            table += '<th scope="col">User Name</th>'
+            table += '<th scope="col">Password</th>'
+            table += '<th scope="col">email</th>'
+            table += '<th scope="col">Action</th>'
+            table += '</tr>'
+
+            // table += `<tr><td>Full Name</td></tr>`;
+            // table += `<tr><td>User Name</td></tr>`;
+            // table += `<tr><td>Password</td></tr>`;
+            // table += `<tr><td>email</td></tr>`;
+
+            axios.get("https://socialmediafht.herokuapp.com/user")
+                .then(function (response) {
+                    console.log(response.data);
+
+                    response.data.map(eachUser => {
+                        // document.querySelector("#getAlluser").innerHTML += 
+                        // `<p>User Name: ${eachUser.fullName}</p>`;
+
+                        // document.querySelector("#getAlluser").innerHTML += 
+                        // `<p>${eachUser.userName}</p>`;
+
+                        table += `<tr>`;
+                        table += `<td> ${eachUser.fullName}</td> `;
+                        table += `<td> ${eachUser.userName}</td> `;
+                        table += `<td> ${eachUser.password}</td> `;
+                        table += `<td> ${eachUser.email}</td> `;
+                        table += '<td><button>Delete</button></td>'
+                        table += `</tr>`;
+
+                    })
+                    table += '</table>';
+                    document.querySelector("#getAlluser")
+                        .innerHTML = table;
+
+                })
+        }
+    </script>
+</body>
+
+</html>
